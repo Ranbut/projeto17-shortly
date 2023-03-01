@@ -14,7 +14,7 @@ export async function Signup (req, res) {
 
         console.log(passwordHashed.length)
 
-        await db.query(`INSERT INTO users (name , email, password, "createdAt") VALUES ('${name}', '${email}', '${passwordHashed}', '${createdAt}');`);
+        await db.query(`INSERT INTO users (name , email, password, "createdAt") VALUES ('$1', '$2', '$3', '$4');`, [name, email, passwordHashed, createdAt]);
         res.sendStatus(201);
     }
     
@@ -28,12 +28,12 @@ export async function Signin (req, res) {
     const { email } = req.body;
 
     try{
-        const emailQuery = await db.query(`SELECT id FROM users WHERE email='${email}';`);
+        const emailQuery = await db.query(`SELECT id FROM users WHERE email='$1';`, [email]);
         const result = emailQuery.rows[0].id;
     
         const token = uuid();
       
-        await db.query(`INSERT INTO sessions ("userId" , token) VALUES ('${result}', '${token}');`);
+        await db.query(`INSERT INTO sessions ("userId" , token) VALUES ('1', '$2');`, [result, token]);
         res.status(200).send({ token });
     }
     

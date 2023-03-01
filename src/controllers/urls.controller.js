@@ -11,12 +11,12 @@ export async function CreateUrl (req, res) {
 
         const header = authorization.split(' ');
         const bearer = header[1];
-        const userId = (await db.query(`SELECT id FROM sessions WHERE token='${bearer}';`)).rows[0].id;
+        const userId = (await db.query(`SELECT id FROM sessions WHERE token='$1';`, [bearer])).rows[0].id;
 
         let urlKey = nanoid(8);
         const createdAt = dayjs().format("YYYY-MM-DD");
         
-        await db.query(`INSERT INTO "shortUrls" ("shortUrl", url, "createdAt", "userId") VALUES ('${urlKey}', '${url}', '${createdAt}', ${userId});`);
+        await db.query(`INSERT INTO "shortUrls" ("shortUrl", url, "createdAt", "userId") VALUES ('$1', '$2', '$3', $4);`, [urlKey, url, createdAt, userId]);
         const createId = (await db.query(`SELECT * FROM "shortUrls" ORDER BY ID DESC LIMIT 1;`)).rows[0].id;
         res.status(201).send({id: createId, shortUrl: urlKey});
     }
@@ -31,7 +31,7 @@ export async function GetUrl (req, res) {
     const { id } = req.params;
 
     try{
-        const result = await db.query(`SELECT id, "shortUrl", url FROM "shortUrls" WHERE id=${id};`);
+        const result = await db.query(`SELECT id, "shortUrl", url FROM "shortUrls" WHERE id=$1;`, [id]);
 
         if (result.rowCount === 0) return res.sendStatus(404);
 
@@ -66,15 +66,15 @@ export async function DeleteUrl (req, res) {
     const bearer = header[1];
 
     try{
-        const tokenQuery = await db.query(`SELECT token FROM sessions WHERE token='${bearer}';`);
+        const tokenQuery = await db.query(`SELECT token FROM sessions WHERE token='$1';`, [bearer]);
 
         if (!authorization || tokenQuery.rowCount === 0) return res.sendStatus(401);
 
-        const shortUrl = (await db.query(`SELECT * FROM "shortUrls" WHERE id = ${id}`)).rows[0];
+        const shortUrl = (await db.query(`SELECT * FROM "shortUrls" WHERE id = $1`, [id])).rows[0];
 
         if (!shortUrl) return res.sendStatus(404);
 
-        await db.query(`DELETE FROM "shortUrls" WHERE id=${id}`);
+        await db.query(`DELETE FROM "shortUrls" WHERE id=1`, [id]);
 
         res.sendStatus(200);
     }
