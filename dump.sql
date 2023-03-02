@@ -69,7 +69,7 @@ CREATE TABLE public."shortsUrls" (
     url character varying NOT NULL,
     "userId" integer NOT NULL,
     "visitCount" integer NOT NULL,
-    "createdAt" date DEFAULT now() NOT NULL
+    "createdAt" timestamp without time zone NOT NULL DEFAULT NOW()
 );
 
 
