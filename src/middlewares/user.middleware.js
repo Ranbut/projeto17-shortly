@@ -18,4 +18,4 @@ export async function validateUserMe (req, res, next) {
     catch(err){
       res.status(500).send(`Erro no servidor: ${err.message}`);
   }
-  };
+};
