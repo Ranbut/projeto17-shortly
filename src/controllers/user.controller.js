@@ -47,7 +47,7 @@ export async function ShowRanking (req, res) {
         const query = await db.query(`
         SELECT userGroup.id ,userGroup.name, COUNT(*) AS "linksCount", SUM ("visitCount") AS "visitCount"
         FROM "shortsUrls"
-        INNER JOIN "users" AS userGroup
+        LEFT JOIN "users" AS userGroup
         ON "shortsUrls"."userId" = userGroup."id"
         GROUP BY userGroup.id, userGroup.name
         ORDER BY SUM ("visitCount") DESC LIMIT 10

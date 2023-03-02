@@ -1,6 +1,6 @@
 import { db } from "../database/database.connection.js";
 
-export async function validateUserMe (req, res, next) {
+export async function validateAuth (req, res, next) {
 
     try{
   
