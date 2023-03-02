@@ -1,20 +1,17 @@
 import { db } from "../database/database.connection.js";
 import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
-import dayjs from "dayjs";
 
 export async function Signup (req, res) {
 
     const { name, email, password } = req.body;
 
     try{
-
-        const createdAt = dayjs().format("YYYY-MM-DD");
         const passwordHashed = await bcrypt.hash(password, 10);
 
         console.log(passwordHashed.length)
 
-        await db.query(`INSERT INTO users (name , email, password, "createdAt") VALUES ('$1', '$2', '$3', '$4');`, [name, email, passwordHashed, createdAt]);
+        await db.query(`INSERT INTO users (name , email, password, "createdAt") VALUES ('$1', '$2', '$3');`, [name, email, passwordHashed]);
         res.sendStatus(201);
     }
     

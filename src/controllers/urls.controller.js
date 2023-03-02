@@ -1,6 +1,5 @@
 import { db } from "../database/database.connection.js";
 import { nanoid } from 'nanoid';
-import dayjs from "dayjs";
 
 export async function CreateUrl (req, res) {
     const { url } = req.body;
@@ -14,9 +13,8 @@ export async function CreateUrl (req, res) {
         const userId = (await db.query(`SELECT id FROM sessions WHERE token='$1';`, [bearer])).rows[0].id;
 
         let urlKey = nanoid(8);
-        const createdAt = dayjs().format("YYYY-MM-DD");
         
-        await db.query(`INSERT INTO "shortUrls" ("shortUrl", url, "createdAt", "userId") VALUES ('$1', '$2', '$3', $4);`, [urlKey, url, createdAt, userId]);
+        await db.query(`INSERT INTO "shortUrls" ("shortUrl", url, "userId") VALUES ('$1', '$2', '$3');`, [urlKey, url, userId]);
         const createId = (await db.query(`SELECT * FROM "shortUrls" ORDER BY ID DESC LIMIT 1;`)).rows[0].id;
         res.status(201).send({id: createId, shortUrl: urlKey});
     }
