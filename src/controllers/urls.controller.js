@@ -34,7 +34,6 @@ export async function GetUrl (req, res) {
         if (result.rowCount === 0) return res.sendStatus(404);
 
         res.status(200).send(result.rows[0]);
-
     }
     
     catch(err){
@@ -44,10 +43,16 @@ export async function GetUrl (req, res) {
 
 export async function OpenShortUrl (req, res) {
 
-    const { shortUrl } = req.query;
+    const { shortUrl } = req.params;
 
     try{
+        const result = await db.query(`SELECT * FROM "shortsUrls" WHERE "shortUrl" = $1;`, [shortUrl]);
 
+        if (result.rowCount === 0) return res.sendStatus(404);
+
+        await db.query(`UPDATE "shortsUrls" SET "visitCount" = "visitCount" + 1 WHERE "shortUrl"=$1;`, [shortUrl])
+
+        res.redirect(302, `${result.rows[0].url}`);
     }
     
     catch(err){
@@ -58,13 +63,16 @@ export async function OpenShortUrl (req, res) {
 export async function DeleteUrl (req, res) {
 
     const { id } = req.params;
-    const authorization = req.headers.authorization;
-
-    const header = authorization.split(' ');
-    const bearer = header[1];
 
     try{
-        const tokenQuery = await db.query(`SELECT token FROM sessions WHERE token=$1;`, [bearer]);
+        const authorization = req.headers.authorization;
+
+        if (!authorization) return res.sendStatus(401);
+
+        const header = authorization.split(' ');
+        const bearer = header[1];
+
+        const tokenQuery = await db.query(`SELECT "userId", token FROM sessions WHERE token = $1;`, [bearer]);
 
         if (!authorization || tokenQuery.rowCount === 0) return res.sendStatus(401);
 
@@ -72,9 +80,13 @@ export async function DeleteUrl (req, res) {
 
         if (!shortUrl) return res.sendStatus(404);
 
-        await db.query(`DELETE FROM "shortsUrls" WHERE id=1`, [id]);
+        console.log(shortUrl.userId)
 
-        res.sendStatus(200);
+        if (shortUrl.userId !== tokenQuery.rows[0].userId) return res.sendStatus(401);
+
+        await db.query(`DELETE FROM "shortsUrls" WHERE id=$1`, [id]);
+
+        res.sendStatus(204);
     }
     
     catch(err){
