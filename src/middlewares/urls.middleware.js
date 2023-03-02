@@ -12,7 +12,7 @@ export async function validateUrlSchema (req, res, next) {
 
   const url = req.body;
 
-  const tokenQuery = await db.query(`SELECT token FROM sessions WHERE token='${bearer}';`);
+  const tokenQuery = await db.query(`SELECT token FROM sessions WHERE token=$1;`, [bearer]);
 
   const { error } = urlsSchema.validate(url, { abortEarly: false });
 

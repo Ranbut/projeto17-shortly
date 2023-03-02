@@ -13,7 +13,7 @@ export async function validateSigninSchema (req, res, next) {
     return res.status(422).send(errors);
   }
 
-  const userQuery = await db.query(`SELECT * FROM users WHERE email='${sign.email}';`);
+  const userQuery = await db.query(`SELECT * FROM users WHERE email=$1;`, [sign.email]);
   const result = userQuery.rows[0];
 
   if (userQuery.rowCount === 0) return res.sendStatus(401);
@@ -36,7 +36,7 @@ export async function validateSignupSchema (req, res, next) {
     return res.status(422).send(errors);
   }
 
-  const emailExist = await db.query(`SELECT email FROM users WHERE email='${sign.email}';`);
+  const emailExist = await db.query(`SELECT email FROM users WHERE email=$1;`, [sign.email]);
 
   if(emailExist.rowCount !== 0) return res.sendStatus(409);
 

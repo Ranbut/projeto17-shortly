@@ -14,7 +14,7 @@ export async function CreateUrl (req, res) {
 
         let urlKey = nanoid(8);
         
-        await db.query(`INSERT INTO "shortsUrls" ("shortUrl", url, "userId", "visitCount") VALUES ($1, $2, $3, $4);`, [urlKey, url, userId, 0]);
+        await db.query(`INSERT INTO "shortsUrls" ("shortUrl", url, "userId") VALUES ($1, $2, $3);`, [urlKey, url, userId]);
         const createId = (await db.query(`SELECT * FROM "shortsUrls" ORDER BY ID DESC LIMIT 1;`)).rows[0].id;
         res.status(201).send({id: createId, shortUrl: urlKey});
     }
