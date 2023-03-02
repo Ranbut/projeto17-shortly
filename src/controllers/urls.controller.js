@@ -14,8 +14,8 @@ export async function CreateUrl (req, res) {
 
         let urlKey = nanoid(8);
         
-        await db.query(`INSERT INTO "shortUrls" ("shortUrl", url, "userId") VALUES ($1, $2, $3);`, [urlKey, url, userId]);
-        const createId = (await db.query(`SELECT * FROM "shortUrls" ORDER BY ID DESC LIMIT 1;`)).rows[0].id;
+        await db.query(`INSERT INTO "shortsUrls" ("shortUrl", url, "userId", "visitCount") VALUES ($1, $2, $3, $4);`, [urlKey, url, userId, 0]);
+        const createId = (await db.query(`SELECT * FROM "shortsUrls" ORDER BY ID DESC LIMIT 1;`)).rows[0].id;
         res.status(201).send({id: createId, shortUrl: urlKey});
     }
     
@@ -29,7 +29,7 @@ export async function GetUrl (req, res) {
     const { id } = req.params;
 
     try{
-        const result = await db.query(`SELECT id, "shortUrl", url FROM "shortUrls" WHERE id=$1;`, [id]);
+        const result = await db.query(`SELECT id, "shortUrl", url FROM "shortsUrls" WHERE id=$1;`, [id]);
 
         if (result.rowCount === 0) return res.sendStatus(404);
 
@@ -68,11 +68,11 @@ export async function DeleteUrl (req, res) {
 
         if (!authorization || tokenQuery.rowCount === 0) return res.sendStatus(401);
 
-        const shortUrl = (await db.query(`SELECT * FROM "shortUrls" WHERE id = $1`, [id])).rows[0];
+        const shortUrl = (await db.query(`SELECT * FROM "shortsUrls" WHERE id = $1`, [id])).rows[0];
 
         if (!shortUrl) return res.sendStatus(404);
 
-        await db.query(`DELETE FROM "shortUrls" WHERE id=1`, [id]);
+        await db.query(`DELETE FROM "shortsUrls" WHERE id=1`, [id]);
 
         res.sendStatus(200);
     }
