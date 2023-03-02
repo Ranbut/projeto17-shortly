@@ -35,7 +35,7 @@ export async function UserMe (req, res) {
             shortenedUrls: urlsQuery.rows
         };
 
-        res.status(201).send(bodyObj);
+        res.status(200).send(bodyObj);
     }
     
     catch(err){
