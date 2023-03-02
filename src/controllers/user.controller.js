@@ -49,7 +49,8 @@ export async function ShowRanking (req, res) {
         FROM "shortsUrls"
         INNER JOIN "users" AS userGroup
         ON "shortsUrls"."userId" = userGroup."id"
-        GROUP BY userGroup.id, userGroup.name ORDER BY SUM ("visitCount") DESC
+        GROUP BY userGroup.id, userGroup.name
+        ORDER BY SUM ("visitCount") DESC LIMIT 10
         ;`);
 
         res.status(200).send(query.rows);
