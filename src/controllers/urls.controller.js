@@ -10,11 +10,11 @@ export async function CreateUrl (req, res) {
 
         const header = authorization.split(' ');
         const bearer = header[1];
-        const userId = (await db.query(`SELECT id FROM sessions WHERE token='$1';`, [bearer])).rows[0].id;
+        const userId = (await db.query(`SELECT id FROM sessions WHERE token=$1;`, [bearer])).rows[0].id;
 
         let urlKey = nanoid(8);
         
-        await db.query(`INSERT INTO "shortUrls" ("shortUrl", url, "userId") VALUES ('$1', '$2', '$3');`, [urlKey, url, userId]);
+        await db.query(`INSERT INTO "shortUrls" ("shortUrl", url, "userId") VALUES ($1, $2, $3);`, [urlKey, url, userId]);
         const createId = (await db.query(`SELECT * FROM "shortUrls" ORDER BY ID DESC LIMIT 1;`)).rows[0].id;
         res.status(201).send({id: createId, shortUrl: urlKey});
     }
@@ -64,7 +64,7 @@ export async function DeleteUrl (req, res) {
     const bearer = header[1];
 
     try{
-        const tokenQuery = await db.query(`SELECT token FROM sessions WHERE token='$1';`, [bearer]);
+        const tokenQuery = await db.query(`SELECT token FROM sessions WHERE token=$1;`, [bearer]);
 
         if (!authorization || tokenQuery.rowCount === 0) return res.sendStatus(401);
 

@@ -7,11 +7,13 @@ export async function Signup (req, res) {
     const { name, email, password } = req.body;
 
     try{
+        console.log(name);
+
         const passwordHashed = await bcrypt.hash(password, 10);
 
         console.log(passwordHashed.length)
 
-        await db.query(`INSERT INTO users (name , email, password, "createdAt") VALUES ('$1', '$2', '$3');`, [name, email, passwordHashed]);
+        await db.query(`INSERT INTO users ("name" , "email", "password") VALUES ($1, $2, $3);`, [name, email, passwordHashed]);
         res.sendStatus(201);
     }
     
@@ -25,12 +27,12 @@ export async function Signin (req, res) {
     const { email } = req.body;
 
     try{
-        const emailQuery = await db.query(`SELECT id FROM users WHERE email='$1';`, [email]);
+        const emailQuery = await db.query(`SELECT id FROM users WHERE email=$1;`, [email]);
         const result = emailQuery.rows[0].id;
     
         const token = uuid();
       
-        await db.query(`INSERT INTO sessions ("userId" , token) VALUES ('1', '$2');`, [result, token]);
+        await db.query(`INSERT INTO sessions ("userId" , "token") VALUES ($1, $2);`, [result, token]);
         res.status(200).send({ token });
     }
     
