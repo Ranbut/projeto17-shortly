@@ -45,7 +45,7 @@ export async function ShowRanking (req, res) {
 
     try{
         const query = await db.query(`
-        SELECT userGroup.id ,userGroup.name, COUNT(*) AS linksCount, SUM ("visitCount") AS "visitCount"
+        SELECT userGroup.id ,userGroup.name, COUNT(*) AS "linksCount", SUM ("visitCount") AS "visitCount"
         FROM "shortsUrls"
         INNER JOIN "users" AS userGroup
         ON "shortsUrls"."userId" = userGroup."id"
